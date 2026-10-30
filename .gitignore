@@ -1,0 +1,60 @@
+# Środowiska wirtualne
+.venv*/
+.test-deps/
+venv/
+
+# IDE
+.idea/
+
+# Cache Pythona
+__pycache__/
+*.pyc
+
+# Baza danych z danymi osobowymi członków
+monity.db
+
+# Sekrety / dane logowania (NIE commitować!)
+config_email.json
+credentials.json
+token.json
+
+# Lokalna konfiguracja
+config_kolumn.json
+
+# Bazy, pliki WAL i kopie
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.sqlite-*
+*.sqlite3-*
+backups/
+data/
+# Wyciągi i eksporty zawierające dane osobowe
+*.xlsx
+*.xls
+*.csv
+*.bak
+
+# Wskazanie lokalnego katalogu danych i kopie
+katalog_danych.txt
+kopie/
+config_kopie.json
+
+# Lokalne instrukcje i narz?dzia asystent?w
+AGENTS.md
+.claudeignore
+.agents/
+.codex/
+.aws/
+# Lokalne dane i diagnostyka
+*.log
+*.eml
+*.pem
+*.key
+.env
+.env.*
+config_*.json
+credentials*.json
+token*.json
+*.pdf
