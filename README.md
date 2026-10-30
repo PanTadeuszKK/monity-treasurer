@@ -1,20 +1,20 @@
-# Monity — rozliczenia małej firmy
+# Monity — Small Business Payment Management
 
-Lokalna aplikacja desktopowa do ewidencji klientów, cyklicznych opłat, wpłat i przypomnień e-mail. Projekt portfolio w Pythonie: CustomTkinter, SQLAlchemy i SQLite. Punkt wyjścia dla małej firmy rozliczającej abonamenty.
+A local desktop application for managing customers, recurring charges, payments, and email reminders. Built as a Python portfolio project with CustomTkinter, SQLAlchemy, and SQLite, it provides a starting point for small businesses that manage subscriptions.
 
-## Funkcje
+## Features
 
-- Kartoteki klientów, wyszukiwanie po nazwie i archiwizacja z zachowaniem historii.
-- Dwa alternatywne pakiety: Standard i Premium.
-- Miesięczne naliczenia, datowane zmiany pakietu, korekty stawek i cofanie naliczeń.
-- Wpłaty ręczne i import XLSX z podglądem, walidacją i kontrolą duplikatów.
-- Karta finansowa klienta, zestawienia i eksport raportów do Excela.
-- Przypomnienia Gmail z podglądem, potwierdzeniem i trwałą kolejką wysyłki.
-- Kopie SQLite, migracje i przekazanie danych innemu operatorowi.
+- Customer records, name search, and archiving with financial history preserved.
+- Two alternative pricing plans: Standard and Premium.
+- Monthly charges, effective-dated plan changes, rate adjustments, and charge reversals.
+- Manual payments and XLSX imports with previews, validation, and duplicate checks.
+- Customer account history, summaries, and Excel report exports.
+- Gmail reminders with previews, confirmation, and a persistent sending queue.
+- SQLite backups, schema migrations, and data handover tools.
 
-## Uruchomienie
+## Getting Started
 
-Wymagany Python 3.12 lub nowszy i Tkinter. Przykład dla Windows PowerShell:
+Requires Python 3.12 or later and Tkinter. Example for Windows PowerShell:
 
 ```powershell
 python -m venv .venv
@@ -24,59 +24,61 @@ $env:MONITY_DATA_DIR = "$HOME\MonityDemo"
 .\.venv\Scripts\python.exe main.py
 ```
 
-Nowy katalog danych oznacza nową bazę. Dla istniejącej instalacji wskaż katalog właściwej bazy. Ścieżka musi być bezwzględna. Można ją też zapisać w lokalnym `katalog_danych.txt` obok kodu. Bez konfiguracji używany jest katalog projektu. Linux/macOS wymagają osobnej weryfikacji GUI i instalacji Tkintera.
+A new data directory creates a new database. For an existing installation, point to the directory containing the correct database. The path must be absolute. Alternatively, save it in a local `katalog_danych.txt` file next to the source code. Without configuration, the application uses the project directory. Linux/macOS require separate GUI verification and a working Tkinter installation.
 
-Podgląd z fikcyjnymi danymi i symulowaną pocztą:
+To preview the application with fictional data and simulated email:
 
 ```text
 python tools/gui_demo.py
 ```
 
-## Zasady rozliczeń
+The application interface is currently in Polish.
 
-Dodaj klienta, wybierz pakiet i miesiąc rozpoczęcia umowy. Stawki początkowe Standard/Premium to przykładowo 35/65 PLN; przed pracą ustaw własne. Miesiące rozpoczęcia i zakończenia umowy są naliczane w całości.
+## Billing Rules
 
-Obecny model ma stały okres roczny czerwiec–maj i zatwierdzanie stawek z mocą od czerwca. Korekty zachowują pierwotne naliczenia. Dowolny kalendarz abonamentowy wymaga dostosowania logiki. Opcjonalna opłata startowa wynosi trzy bazowe stawki Standard.
+Add a customer, select a plan, and choose the contract start month. The initial Standard/Premium rates are example values of PLN 35/65; configure your own rates before use. Both the start and end months are charged in full.
 
-Dodatnie saldo oznacza nadpłatę, ujemne zaległość. Edycja salda początkowego okresu zapisuje informację o już uwzględnionej kwocie i nie zmienia salda bieżącego. Widok „najstarsze najpierw” nie zapisuje przydziałów wpłat do należności.
+The current model uses a fixed June–May annual billing period, with approved rates taking effect from June. Adjustments preserve the original charges. A different subscription calendar requires changes to the billing logic. The optional setup fee equals three times the base Standard rate.
 
-## Import
+A positive balance indicates credit; a negative balance indicates an outstanding amount. Editing the opening balance records an amount already included in the account and does not change the current balance. The oldest-first settlement view does not persist payment allocations against individual charges.
 
-Mapowanie kolumn wyciągu ustaw w aplikacji. Import wymaga dodatniej kwoty PLN i prawidłowej daty. `A!12` w tytule przelewu jest technicznym identyfikatorem klienta; niejednoznaczne pozycje wymagają ręcznego wyboru. Format eksportu danego banku należy sprawdzić na zanonimizowanej próbce.
+## Imports
 
-Import kartotek XLSX:
+Configure bank statement column mappings in the application. Imports require a positive PLN amount and a valid date. A reference such as `A!12` in the transfer description is a technical customer identifier; ambiguous entries require manual selection. Each bank's export format should be verified using an anonymized sample.
 
-```text
-python import_czlonkow.py klienci.xlsx
-python import_czlonkow.py klienci.xlsx --zapisz
-```
-
-Pierwsze polecenie tylko sprawdza plik. Zapis wykonuj przy zamkniętej aplikacji; poprzedza go kopia bazy. Nagłówki: `Imie`, `Nazwisko`, `Numer Konta`, `Mail`, `Saldo`, `Data dołączenia`, `Status`. Status: `Standard` lub `Premium`. Saldo jest wymagane. Konwencja tego importu: **plus = zaległość, minus = nadpłata**. Rachunki zapisuj jako tekst. Import dodaje nowe kartoteki, nie aktualizuje istniejących.
-
-## Poczta
-
-Skonfiguruj nadawcę w oknie Gmail. SMTP używa hasła aplikacji, przechowywanego poza repozytorium w katalogu danych. Przed wysyłką ustaw własnego odbiorcę płatności i rachunek w `mail_content.py`: wersja demonstracyjna zawiera oznaczenia do uzupełnienia.
-
-Każdą wysyłkę poprzedza podgląd i potwierdzenie. Niepewny wynik wymaga ręcznego sprawdzenia przed ponowieniem. `MONITY_MAIL_DRY_RUN=1` symuluje pocztę bez połączenia sieciowego. Integracja OAuth nie jest zaimplementowana.
-
-## Kopie i dane
-
-Przy zamknięciu powstaje kopia SQLite; przechowywanych jest 30 najnowszych kopii automatycznych. Ustawienia udostępniają też kopie ręczne i dodatkowy folder kopii.
+To import customer records from XLSX:
 
 ```text
-python backup.py kopia.db
-python backup.py odtworzona.db --source kopia.db
+python import_czlonkow.py customers.xlsx
+python import_czlonkow.py customers.xlsx --zapisz
 ```
 
-Narzędzie korzysta z mechanizmu backup SQLite i nie nadpisuje istniejącego celu. Odtworzenie sprawdzaj w osobnym katalogu. Nie synchronizuj otwartej bazy między komputerami. Aplikacja nie szyfruje bazy ani kopii. Dane klientów, konfiguracja, eksporty i lokalne instrukcje są wykluczone z Git.
+The first command only validates the file. Close the application before saving; a database backup is created before the import. Required column headers retain their Polish names: `Imie`, `Nazwisko`, `Numer Konta`, `Mail`, `Saldo`, `Data dołączenia`, `Status`. The status must be `Standard` or `Premium`. A balance is required. This import uses **positive = outstanding amount, negative = credit**. Store bank account numbers as text. The import creates new records and does not update existing customers.
 
-## Architektura
+## Email
 
-`main.py` uruchamia GUI, `frames/` zawiera widoki, a `ui.py` wspólne elementy interfejsu. `models.py` definiuje schemat i migracje. Reguły rozliczeń są w modułach usług, m.in. `annual_fees.py`, `finance_service.py`, `import_service.py`, `report_service.py` i `mail_service.py`. `paths.py` odpowiada za lokalizację danych, a `backup.py` za kopie. Historyczne nazwy części modułów i tabel pozostają dla zgodności schematu.
+Configure the sender in the Gmail settings window. SMTP uses an app password stored outside the repository in the data directory. Before sending reminders, set your own payment recipient and bank account in `mail_content.py`; the demo contains placeholders.
 
-## Testy
+Each send requires a preview and confirmation. Uncertain sending results require manual review before retrying. Set `MONITY_MAIL_DRY_RUN=1` to simulate email without network access. OAuth integration is not implemented.
 
-Testy korzystają z danych syntetycznych i nie wysyłają rzeczywistej poczty:
+## Backups and Data
+
+A SQLite backup is created when the application closes; the 30 most recent automatic backups are retained. Settings also provide manual backups and an optional additional backup directory.
+
+```text
+python backup.py backup.db
+python backup.py restored.db --source backup.db
+```
+
+The tool uses SQLite's backup mechanism and refuses to overwrite an existing destination. Test restoration in a separate directory. Do not synchronize an open database between computers. The application does not encrypt the database or its backups. Customer data, configuration, exports, and local development instructions are excluded from Git.
+
+## Architecture
+
+`main.py` starts the GUI, `frames/` contains views, and `ui.py` provides shared interface components. `models.py` defines the schema and migrations. Billing and workflow rules live in service modules, including `annual_fees.py`, `finance_service.py`, `import_service.py`, `report_service.py`, and `mail_service.py`. `paths.py` handles data locations, while `backup.py` manages backups. Some module and table names retain their historical naming for schema compatibility.
+
+## Tests
+
+Tests use synthetic data and do not send real email:
 
 ```text
 python -m unittest discover -s tests -p "test_*.py"
@@ -85,8 +87,8 @@ python -m unittest discover -s tests -p gui_system.py
 python -m unittest discover -s tests -p gui_financial_review.py
 ```
 
-Zestawy GUI wymagają działającego środowiska graficznego i Tkintera.
+GUI suites require a working graphical environment and Tkinter.
 
-## Ograniczenia
+## Limitations
 
-Projekt nie zastępuje systemu księgowego ani fakturowania. Część starszych kwot pozostaje w kolumnach FLOAT; nowe naliczenia i korekty są zapisywane w groszach. Brakuje trwałych przydziałów wpłat i automatycznego zamknięcia okresu. Raporty oznaczają braki historii zamiast odtwarzać ją z aktualnego salda. Rzeczywiste doręczenie Gmail i działanie na innych systemach wymagają osobnej weryfikacji.
+This project does not replace accounting or invoicing software. Some legacy monetary values remain in FLOAT columns; new charges and adjustments are stored as integer grosz amounts (1/100 PLN). Persistent payment allocations and automatic period closing are not implemented. Reports flag missing historical data rather than reconstructing it from current balances. Actual Gmail delivery and operation on other systems require separate verification.
